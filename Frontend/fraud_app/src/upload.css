@@ -1,0 +1,118 @@
+.container {
+  padding: 24px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.upload-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+}
+
+.upload-header {
+  margin-bottom: 20px;
+}
+
+.upload-header h2 {
+  margin: 0 0 6px;
+  color: #111827;
+}
+
+.upload-header p {
+  margin: 0;
+  color: #111111;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.upload-section {
+  padding: 14px;
+  border: 1px dashed #000000;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #000000;
+}
+
+.file-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-box input {
+  font-size: 14px;
+}
+
+.upload-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgb(224, 255, 255);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #54f7f7;
+}
+
+.upload-button span {
+  color: #080808 !important;
+}
+
+.upload-button input {
+  display: none;
+}
+
+.file-box span {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.submitButton {
+  padding: 10px 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-weight: 600;
+}
+
+.submitButton:hover {
+  background: #1d4ed8;
+}
+
+.submitButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.resultContainer {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  background: #eff6ff;
+}
+
+.jsonViewer {
+  background: #f8fafc;
+  padding: 10px;
+  overflow-x: auto;
+  border-radius: 8px;
+}

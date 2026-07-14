@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import './upload.css'; // นำเข้าไฟล์ CSS สำหรับสไตล์
 
-function UploadComponent() {
+export default function UploadComponent() {
   const [bankFile, setBankFile] = useState(null);
   const [internalFile, setInternalFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -40,48 +41,82 @@ function UploadComponent() {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
-      <h2>ระบบอัปโหลดเอกสารบัญชี</h2>
-      
-      <form onSubmit={handleUpload}>
-        <div style={{ marginBottom: '15px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>1. ไฟล์ Bank Statement:</label>
-          <input 
-            type="file" 
-            accept=".csv, .xlsx, .xls"
-            onChange={(e) => setBankFile(e.target.files[0])} 
-          />
+    <div className="container">
+      <div className="upload-card">
+        <div className="upload-header">
+          <h2>ระบบอัปโหลดเอกสารบัญชี</h2>
+          <p>เลือกไฟล์ทั้ง 2 ฉบับเพื่อเริ่มตรวจสอบความเสี่ยง</p>
         </div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>2. ไฟล์ บัญชีภายในบริษัท:</label>
-          <input 
-            type="file" 
-            accept=".csv, .xlsx, .xls"
-            onChange={(e) => setInternalFile(e.target.files[0])} 
-          />
-        </div>
+        <form onSubmit={handleUpload} className="upload-form">
+          <div className="upload-section">
+            <label className="label">1. ไฟล์ Bank Statement</label>
+            <div className="file-box">
+              <label className="upload-button">
+                <span>เลือกไฟล์</span>
+                <input
+                  type="file"
+                  accept=".csv, .xlsx, .xls"
+                  onChange={(e) => setBankFile(e.target.files[0])}
+                />
+              </label>
+              <label className="upload-button">
+                <span>อัปโหลดไฟล์ PDF</span>
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={(e) => setBankFile(e.target.files[0])}
+                />
+              </label>
+              <span>{bankFile ? bankFile.name : 'เลือกไฟล์ .csv / .xlsx / .xls หรือ PDF'}</span>
+            </div>
+          </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "กำลังประมวลผล..." : "เริ่มตรวจสอบข้อมูล"}
-        </button>
-      </form>
+          <div className="upload-section">
+            <label className="label">2. ไฟล์บัญชีภายในบริษัท</label>
+            <div className="file-box">
+              <label className="upload-button">
+                <span>เลือกไฟล์</span>
+                <input
+                  type="file"
+                  accept=".csv, .xlsx, .xls"
+                  onChange={(e) => setInternalFile(e.target.files[0])}
+                />
+              </label>
+              <label className="upload-button">
+                <span>อัปโหลดไฟล์ PDF</span>
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={(e) => setInternalFile(e.target.files[0])}
+                />
+              </label>
+              <span>{internalFile ? internalFile.name : 'เลือกไฟล์ .csv / .xlsx / .xls หรือ PDF'}</span>
+            </div>
+          </div>
 
-      {/* ส่วนแสดงผลลัพธ์จาก FastAPI */}
-      {result && (
-        <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px' }}>
-          <h3>ผลการทำงาน ({result.status})</h3>
-          <p>{result.message}</p>
-          
-          {result.status === "success" && (
-            <pre style={{ background: '#f4f4f4', padding: '10px', overflowX: 'auto' }}>
-              {JSON.stringify(result, null, 2)}
-            </pre>
-          )}
-        </div>
-      )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="submitButton"
+          >
+            {loading ? 'กำลังประมวลผล...' : 'เริ่มตรวจสอบข้อมูล'}
+          </button>
+        </form>
+
+        {result && (
+          <div className="resultContainer">
+            <h3>ผลการทำงาน ({result.status})</h3>
+            <p>{result.message}</p>
+
+            {result.status === 'success' && (
+              <pre className="jsonViewer">
+                {JSON.stringify(result, null, 2)}
+              </pre>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-
-export default UploadComponent;

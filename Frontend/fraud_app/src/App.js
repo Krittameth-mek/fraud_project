@@ -1,15 +1,13 @@
 import './App.css';
-import Navbar from './Navbar';
-import UploadComponent from './upload';
+import Navbar from './Navbar.js';
+import UploadComponent from './upload.js';
 
 function App() {
-  const title = "Fraud App"
 
   return (
     <div className="App">
-      <nav />
+      <Navbar />
       <div className='content'>
-        <h1>{title}</h1>
         <UploadComponent />
       </div>
       

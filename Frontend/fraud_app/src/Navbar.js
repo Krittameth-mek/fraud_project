@@ -1,10 +1,11 @@
-const Navbar = () => {
-    return ( 
-        <nav className="navbar">
-            <h1></h1>
-            <div></div>
-        </nav>
-     );
+import './App.css';
+
+export default function Navbar() {
+  return (
+    <nav className="navbar">
+      <div className="navbar-brand">Fraud App</div>
+    </nav>
+  );
 }
- 
-export default Navbar;
+
+
