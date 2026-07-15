@@ -10,7 +10,7 @@ export default function UploadComponent() {
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!bankFile || !internalFile) {
-      alert("กรุณาเลือกไฟล์ให้ครบทั้ง 2 ใบก่อนครับ");
+      alert("กรุณาเลือกไฟล์ให้ครบทั้ง 2 ไฟล์ก่อนครับ");
       return;
     }
 
