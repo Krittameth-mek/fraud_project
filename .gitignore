@@ -1,3 +1,5 @@
 backend/__pycache__/main.cpython-311.pyc
 Frontend/fraud_app/package-lock.json
 Frontend/fraud_app/package-lock.json
+backend/app.db
+/backend/__pycache__
