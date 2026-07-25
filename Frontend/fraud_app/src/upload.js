@@ -6,6 +6,7 @@ export default function UploadComponent() {
   const [internalFile, setInternalFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [password, setPassword] = useState('');
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -22,19 +23,37 @@ export default function UploadComponent() {
     // ชื่อ Key (ตัวหนังสือสีส้ม) ต้องตรงกับชื่อตัวแปรใน FastAPI เป๊ะๆ
     formData.append("bank_statement", bankFile);
     formData.append("internal_ledger", internalFile);
+    if (password) formData.append('password', password);
 
     try {
       // 2. ยิง API ไปที่ URL ของ FastAPI
-      const response = await fetch("http://127.0.0.1:8000/upload-files", {
+      console.log('Uploading files to http://127.0.0.1:8000/api/upload/files', bankFile, internalFile);
+      const response = await fetch("http://127.0.0.1:8000/api/upload/files", {
         method: "POST",
-        body: formData, // ส่ง formData ไปใน body
+        body: formData,
       });
 
-      const data = await response.json();
-      setResult(data); // เก็บผลลัพธ์จาก FastAPI ลง State
+      console.log('Response status:', response.status, response.statusText);
+
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('Upload failed, body:', text);
+        setResult({ status: 'error', message: `Server returned ${response.status}`, code: response.status, body: text });
+      } else {
+        // Try parse JSON, but guard in case backend returned non-json
+        try {
+          const data = await response.json();
+          console.log('Upload success, response:', data);
+          setResult(data);
+        } catch (e) {
+          const text = await response.text();
+          console.warn('Response not JSON, body:', text);
+          setResult({ status: 'success', message: 'Received non-JSON response', body: text });
+        }
+      }
     } catch (error) {
       console.error("Error uploading files:", error);
-      setResult({ status: "error", message: "ไม่สามารถเชื่อมต่อกับ Server ได้" });
+      setResult({ status: "error", message: error.message || "ไม่สามารถเชื่อมต่อกับ Server ได้" });
     } finally {
       setLoading(false);
     }
@@ -95,6 +114,17 @@ export default function UploadComponent() {
             </div>
           </div>
 
+          <div className="upload-section">
+            <label className="label">รหัสผ่านไฟล์ (ถ้ามี)</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="รหัสผ่าน (optional)"
+              style={{width: '100%', padding: '8px', marginTop: '8px'}}
+            />
+          </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -109,10 +139,10 @@ export default function UploadComponent() {
             <h3>ผลการทำงาน ({result.status})</h3>
             <p>{result.message}</p>
 
-            {result.status === 'success' && (
-              <pre className="jsonViewer">
-                {JSON.stringify(result, null, 2)}
-              </pre>
+            {result && (
+                <pre className="jsonViewer">
+                  {JSON.stringify(result, null, 2)}
+                </pre>
             )}
           </div>
         )}
