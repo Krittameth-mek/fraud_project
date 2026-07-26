@@ -1,5 +1,26 @@
 import React, { useState } from 'react';
-import './upload.css'; // นำเข้าไฟล์ CSS สำหรับสไตล์
+import './upload.css';
+
+const PREVIEW_COLUMNS = [
+  { key: 'date', label: 'วันที่' },
+  { key: 'time', label: 'เวลา' },
+  { key: 'item', label: 'รายการ' },
+  { key: 'amount', label: 'จำนวนเงิน' },
+  { key: 'balance', label: 'ยอดคงเหลือ' },
+  { key: 'channel', label: 'ช่องทาง' },
+  { key: 'detail', label: 'รายละเอียด' },
+];
+
+export const buildPreviewRows = (transactions = []) =>
+  (transactions || []).map((txn) => ({
+    date: txn.date || '',
+    time: txn.time || '',
+    item: txn.item || '',
+    amount: txn.amount || '',
+    balance: txn.balance || '',
+    channel: txn.channel || '',
+    detail: txn.detail || '',
+  }));
 
 export default function UploadComponent() {
   const [bankFile, setBankFile] = useState(null);
@@ -7,55 +28,81 @@ export default function UploadComponent() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [password, setPassword] = useState('');
+  const [previewRows, setPreviewRows] = useState([]);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState('');
 
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!bankFile || !internalFile) {
-      alert("กรุณาเลือกไฟล์ให้ครบทั้ง 2 ไฟล์ก่อนครับ");
+      alert('กรุณาเลือกไฟล์ให้ครบทั้ง 2 ไฟล์ก่อนครับ');
       return;
     }
 
     setLoading(true);
     setResult(null);
 
-    // 1. สร้าง FormData เพื่อแพ็กไฟล์
     const formData = new FormData();
-    // ชื่อ Key (ตัวหนังสือสีส้ม) ต้องตรงกับชื่อตัวแปรใน FastAPI เป๊ะๆ
-    formData.append("bank_statement", bankFile);
-    formData.append("internal_ledger", internalFile);
+    formData.append('bank_statement', bankFile);
+    formData.append('internal_ledger', internalFile);
     if (password) formData.append('password', password);
 
     try {
-      // 2. ยิง API ไปที่ URL ของ FastAPI
-      console.log('Uploading files to http://127.0.0.1:8000/api/upload/files', bankFile, internalFile);
-      const response = await fetch("http://127.0.0.1:8000/api/upload/files", {
-        method: "POST",
+      const response = await fetch('http://127.0.0.1:8000/api/upload/files', {
+        method: 'POST',
         body: formData,
       });
 
-      console.log('Response status:', response.status, response.statusText);
-
       if (!response.ok) {
         const text = await response.text();
-        console.error('Upload failed, body:', text);
         setResult({ status: 'error', message: `Server returned ${response.status}`, code: response.status, body: text });
       } else {
-        // Try parse JSON, but guard in case backend returned non-json
         try {
           const data = await response.json();
-          console.log('Upload success, response:', data);
           setResult(data);
         } catch (e) {
           const text = await response.text();
-          console.warn('Response not JSON, body:', text);
           setResult({ status: 'success', message: 'Received non-JSON response', body: text });
         }
       }
     } catch (error) {
-      console.error("Error uploading files:", error);
-      setResult({ status: "error", message: error.message || "ไม่สามารถเชื่อมต่อกับ Server ได้" });
+      setResult({ status: 'error', message: error.message || 'ไม่สามารถเชื่อมต่อกับ Server ได้' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePreviewBankData = async () => {
+    if (!bankFile) {
+      alert('กรุณาเลือกไฟล์ Bank Statement ก่อนครับ');
+      return;
+    }
+
+    setPreviewLoading(true);
+    setPreviewError('');
+    setPreviewRows([]);
+
+    const formData = new FormData();
+    formData.append('file', bankFile);
+    if (password) formData.append('password', password);
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/upload/statement', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(data?.detail || `Server returned ${response.status}`);
+      }
+
+      const transactions = Array.isArray(data?.transactions) ? data.transactions : [];
+      setPreviewRows(buildPreviewRows(transactions));
+    } catch (error) {
+      setPreviewError(error.message || 'ไม่สามารถดึงข้อมูลจาก backend ได้');
+    } finally {
+      setPreviewLoading(false);
     }
   };
 
@@ -75,19 +122,21 @@ export default function UploadComponent() {
                 <span>เลือกไฟล์</span>
                 <input
                   type="file"
-                  accept=".csv, .xlsx, .xls"
-                  onChange={(e) => setBankFile(e.target.files[0])}
-                />
-              </label>
-              <label className="upload-button">
-                <span>อัปโหลดไฟล์ PDF</span>
-                <input
-                  type="file"
                   accept=".pdf"
                   onChange={(e) => setBankFile(e.target.files[0])}
                 />
               </label>
-              <span>{bankFile ? bankFile.name : 'เลือกไฟล์ .csv / .xlsx / .xls หรือ PDF'}</span>
+              <div className="file-actions">
+                <span>{bankFile ? bankFile.name : 'เลือกไฟล์ PDF ของ Bank Statement'}</span>
+                <button
+                  type="button"
+                  className="previewButton"
+                  onClick={handlePreviewBankData}
+                  disabled={!bankFile || previewLoading}
+                >
+                  {previewLoading ? 'กำลังโหลด...' : 'แสดงผลข้อมูล'}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -102,15 +151,7 @@ export default function UploadComponent() {
                   onChange={(e) => setInternalFile(e.target.files[0])}
                 />
               </label>
-              <label className="upload-button">
-                <span>อัปโหลดไฟล์ PDF</span>
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={(e) => setInternalFile(e.target.files[0])}
-                />
-              </label>
-              <span>{internalFile ? internalFile.name : 'เลือกไฟล์ .csv / .xlsx / .xls หรือ PDF'}</span>
+              <span>{internalFile ? internalFile.name : 'เลือกไฟล์ .csv / .xlsx / .xls'}</span>
             </div>
           </div>
 
@@ -121,29 +162,52 @@ export default function UploadComponent() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="รหัสผ่าน (optional)"
-              style={{width: '100%', padding: '8px', marginTop: '8px'}}
+              style={{ width: '100%', padding: '8px', marginTop: '8px' }}
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="submitButton"
-          >
+          <button type="submit" disabled={loading} className="submitButton">
             {loading ? 'กำลังประมวลผล...' : 'เริ่มตรวจสอบข้อมูล'}
           </button>
         </form>
+
+        {previewError && <p className="previewError">{previewError}</p>}
+
+        {previewRows.length > 0 && (
+          <div className="previewContainer">
+            <h3>ข้อมูล Bank Statement ที่ได้จาก backend</h3>
+            <div className="tableWrapper">
+              <table className="previewTable">
+                <thead>
+                  <tr>
+                    {PREVIEW_COLUMNS.map((column) => (
+                      <th key={column.key}>{column.label}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {previewRows.map((row, index) => (
+                    <tr key={`${row.date}-${row.time}-${index}`}>
+                      <td>{row.date}</td>
+                      <td>{row.time}</td>
+                      <td>{row.item}</td>
+                      <td>{row.amount}</td>
+                      <td>{row.balance}</td>
+                      <td>{row.channel}</td>
+                      <td>{row.detail}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {result && (
           <div className="resultContainer">
             <h3>ผลการทำงาน ({result.status})</h3>
             <p>{result.message}</p>
-
-            {result && (
-                <pre className="jsonViewer">
-                  {JSON.stringify(result, null, 2)}
-                </pre>
-            )}
+            <pre className="jsonViewer">{JSON.stringify(result, null, 2)}</pre>
           </div>
         )}
       </div>
