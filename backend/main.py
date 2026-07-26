@@ -127,7 +127,8 @@ async def upload_statement(
             "status": "success",
             "upload_id": upload_log.id,
             "filename": file.filename,
-            "inserted_count": len(db_entries)
+            "inserted_count": len(db_entries),
+            "transactions": raw_transactions
         }
 
     except Exception as e:
@@ -209,7 +210,8 @@ async def upload_files(
             "bank": {
                 "upload_id": bank_upload_log.id,
                 "filename": bank_statement.filename,
-                "inserted_count": len(bank_entries)
+                "inserted_count": len(bank_entries),
+                "transactions": raw_transactions
             },
             "ledger": {
                 "upload_id": ledger_upload_log.id,
