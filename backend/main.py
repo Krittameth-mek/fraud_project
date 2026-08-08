@@ -7,10 +7,14 @@ from typing import Optional
 from fastapi import FastAPI, UploadFile, File, Form, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-
-from . import database, models
-from .KBankPDF import parse_kbank_pdf, clean_amount
 from openpyxl import load_workbook
+
+try:
+    from . import database, models
+    from .KBankPDF import parse_kbank_pdf, clean_amount
+except ImportError:
+    import database, models
+    from KBankPDF import parse_kbank_pdf, clean_amount
 
 logging.basicConfig(level=logging.INFO)
 
