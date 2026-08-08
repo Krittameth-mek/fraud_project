@@ -1,12 +1,17 @@
+/* Layout หลัก และ Navbar */
 .App {
   text-align: left;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  background-color: #f8fafc;
+  min-height: 100vh;
 }
 
 .navbar {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  padding: 1rem 1.5rem;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
   background-color: #1f2937;
   color: white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
@@ -15,43 +20,328 @@
 .navbar-brand {
   font-size: 1.25rem;
   font-weight: 700;
+  color: #ffffff;
+}
+
+.btn-new-work {
+  padding: 8px 16px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-new-work:hover {
+  background-color: #1d4ed8;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.user-menu:hover {
+  background-color: #374151;
 }
 
 .content {
   padding: 1.5rem;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* หน้า Auth (Login / Register) */
+.auth-card {
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.auth-card h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #0f172a;
+  text-align: center;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-card input[type="email"],
+.auth-card input[type="password"] {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.validation-msg {
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.validation-msg.valid {
+  color: #16a34a;
+}
+
+.validation-msg.invalid {
+  color: #dc2626;
+}
+
+.terms-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #334155;
+  margin: 6px 0;
+}
+
+.link-text {
+  color: #2563eb;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 18px 0;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.divider::before {
+  margin-right: .5em;
+}
+
+.divider::after {
+  margin-left: .5em;
+}
+
+.google-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.google-btn:hover {
+  background-color: #f8fafc;
+}
+
+/* หน้า Home (Search Bar, Tabs & Process List) */
+.search-container {
+  margin-bottom: 24px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.tabs-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.tab-item {
+  padding: 6px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #475569;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-item:hover {
+  background: #f1f5f9;
+}
+
+.tab-item.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.process-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.process-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* Hover เปลี่ยน BG เป็นสีเทาอ่อนตาม Requirement */
+.process-item:hover {
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
+}
+
+.process-info h3 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  color: #1e293b;
+}
+
+.process-info p {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.process-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.icon-btn:hover {
+  background-color: #cbd5e1;
+}
+
+.icon-btn.delete:hover {
+  background-color: #fecaca;
+}
+
+/* หน้า Summary (กราฟจำลอง & จุดเตือน Anomaly Indicator) */
+.chart-legend {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.chart-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  height: 320px;
+  display: flex;
+  align-items: flex-end;
+  gap: 36px;
+  padding: 24px;
+  overflow-x: auto;
+}
+
+.chart-bar-wrapper {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  cursor: pointer;
 }
 
-.App-link {
-  color: #61dafb;
+.chart-bar {
+  background: #3b82f6;
+  border-radius: 4px 4px 0 0;
+  transition: background-color 0.2s;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.chart-bar-wrapper:hover .chart-bar {
+  background: #2563eb;
+}
+
+.anomaly-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  position: absolute;
+  top: -22px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.dot-red {
+  background-color: #dc2626;
+}
+
+.dot-orange {
+  background-color: #ea580c;
+}
+
+.dot-yellow {
+  background-color: #eab308;
+}
+
+.tooltip-box {
+  margin-top: 20px;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  border-left: 4px solid #2563eb;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.tooltip-box h4 {
+  margin: 0 0 8px 0;
+  color: #0f172a;
+}
+
+.tooltip-box p {
+  margin: 4px 0;
+  color: #475569;
+  font-size: 14px;
 }

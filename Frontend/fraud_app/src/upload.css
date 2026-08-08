@@ -1,13 +1,13 @@
 .container {
   padding: 24px;
-  max-width: 680px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
 .upload-card {
   background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
   padding: 24px;
   border: 1px solid #e5e7eb;
 }
@@ -23,7 +23,7 @@
 
 .upload-header p {
   margin: 0;
-  color: #111111;
+  color: #4b5563;
 }
 
 .upload-form {
@@ -34,7 +34,7 @@
 
 .upload-section {
   padding: 14px;
-  border: 1px dashed #000000;
+  border: 1px dashed #cbd5e1;
   border-radius: 12px;
   background: #f8fafc;
 }
@@ -43,7 +43,7 @@
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #000000;
+  color: #0f172a;
 }
 
 .file-box {
@@ -61,36 +61,65 @@
   align-items: center;
   justify-content: center;
   width: fit-content;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: rgb(224, 255, 255);
-  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #e0f2fe;
+  color: #0369a1;
   font-weight: 600;
   cursor: pointer;
-  border: 1px solid #54f7f7;
+  border: 1px solid #bae6fd;
 }
 
 .upload-button span {
-  color: #080808 !important;
+  color: #0369a1 !important;
 }
 
 .upload-button input {
   display: none;
 }
 
-.file-box span {
+.file-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.file-actions span {
   font-size: 14px;
   color: #64748b;
+}
+
+.previewButton {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #0f766e;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.previewButton:hover {
+  background: #0d9488;
+}
+
+.previewButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .submitButton {
   padding: 10px 16px;
   cursor: pointer;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   background: #2563eb;
   color: white;
   font-weight: 600;
+  transition: background-color 0.2s;
 }
 
 .submitButton:hover {
@@ -100,6 +129,132 @@
 .submitButton:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+/* Prompt Section & Quick Prompt Chips */
+.prompt-section {
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.prompt-section h3 {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.preset-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.chip-btn {
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chip-btn:hover {
+  background: #dbeafe;
+  border-color: #60a5fa;
+}
+
+/* Preview Container, Table Overflow Height & Sticky Header */
+.previewContainer {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.tableWrapper {
+  max-height: 480px; /* จำกัดความสูงพื้นที่ประมาณ 20 รายการตาม Requirement */
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.previewTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.previewTable th,
+.previewTable td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 13px;
+}
+
+.previewTable th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.previewTable tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Pagination Control Styling */
+.pagination-controls {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.pagination-controls button {
+  padding: 6px 12px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.2s;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-controls select {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+}
+
+.previewError {
+  margin-top: 12px;
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .resultContainer {
@@ -115,4 +270,5 @@
   padding: 10px;
   overflow-x: auto;
   border-radius: 8px;
+  font-size: 12px;
 }

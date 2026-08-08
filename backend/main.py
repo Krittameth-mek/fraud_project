@@ -65,7 +65,8 @@ async def upload_statement(
             "status": "success",
             "upload_id": upload_log.id,
             "filename": file.filename,
-            "inserted_count": len(db_entries)
+            "inserted_count": len(db_entries),
+            "transactions": raw_transactions
         }
 
     except Exception as e:
