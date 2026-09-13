@@ -1,10 +1,17 @@
 // src/components/Navbar.jsx
 import React from 'react';
+import { apiService } from '../services/api';
 
-export default function Navbar({ activePage, setActivePage, currentUser }) {
+export default function Navbar({ activePage, setActivePage, currentUser, setCurrentUser }) {
   if (activePage === 'login' || activePage === 'register' || activePage === 'terms') {
     return null;
   }
+
+  const handleLogout = async () => {
+    await apiService.logout();
+    setCurrentUser(null);
+    setActivePage('login');
+  };
 
   return (
     <nav className="navbar">
@@ -23,8 +30,9 @@ export default function Navbar({ activePage, setActivePage, currentUser }) {
           ระบบตรวจสอบบัญชี SME
         </span>
       </div>
-      <div className="user-menu" onClick={() => setActivePage('account')} style={{ cursor: 'pointer' }}>
-        <span>👤 {currentUser ? currentUser.email : 'บัญชีของฉัน'}</span>
+      <div className="user-menu" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <span onClick={() => setActivePage('account')} style={{ cursor: 'pointer' }}>👤 {currentUser.email}</span>
+        <button onClick={handleLogout}>ออกจากระบบ</button>
       </div>
     </nav>
   );

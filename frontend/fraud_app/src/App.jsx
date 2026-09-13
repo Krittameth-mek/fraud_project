@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Navbar from './components/Navbar';
 import LoginPage from './pages/LoginPage';
@@ -9,11 +9,27 @@ import UploadPage from './pages/UploadPage';
 import SummaryPage from './pages/SummaryPage';
 import AccountPage from './pages/AccountPage';
 import TermsPage from './pages/TermsPage';
+import { apiService } from './services/api';
 
 function App() {
-  const [activePage, setActivePage] = useState('home');
+  const [activePage, setActivePage] = useState('login');
   const [selectedProcessId, setSelectedProcessId] = useState(null);
-  const [currentUser, setCurrentUser] = useState({ email: 'user@sme.com', id: 'usr_01' });
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    if (!localStorage.getItem('auth_token')) {
+      setAuthLoading(false);
+      return;
+    }
+    apiService.getCurrentUser()
+      .then((user) => {
+        setCurrentUser(user);
+        setActivePage('home');
+      })
+      .catch(() => localStorage.removeItem('auth_token'))
+      .finally(() => setAuthLoading(false));
+  }, []);
 
   const renderPage = () => {
     switch (activePage) {
@@ -46,9 +62,16 @@ function App() {
     }
   };
 
+  if (authLoading) return <div className="container">กำลังตรวจสอบเซสชัน...</div>;
+
   return (
     <div className="App">
-      <Navbar activePage={activePage} setActivePage={setActivePage} currentUser={currentUser} />
+      <Navbar
+        activePage={activePage}
+        setActivePage={setActivePage}
+        currentUser={currentUser}
+        setCurrentUser={setCurrentUser}
+      />
       <div className="content">{renderPage()}</div>
     </div>
   );

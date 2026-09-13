@@ -33,11 +33,16 @@ export default function UploadComponent({ onUploadSuccess, onUploadError }) {
     setResult(null);
 
     try {
-      const response = await apiService.uploadStatement(bankFile, password);
-      const transactions = response?.transactions ?? [];
-      setResult(response);
+      let response;
+      if (bankFile && internalFile) {
+        response = await apiService.uploadFiles(bankFile, internalFile, password);
+      } else {
+        response = await apiService.uploadStatement(bankFile, password);
+      }
 
-      if (response?.status === 'success' || transactions.length > 0) {
+      setResult(response);
+      const transactions = response?.transactions ?? response?.bank?.transactions ?? [];
+      if ((response?.status === 'success' && transactions.length > 0) || transactions.length > 0) {
         onUploadSuccess?.(transactions);
       } else {
         onUploadError?.(response);
@@ -49,6 +54,17 @@ export default function UploadComponent({ onUploadSuccess, onUploadError }) {
       onUploadError?.(errorResult);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePreview = async () => {
+    if (!bankFile) return alert('กรุณาเลือกไฟล์ Statement ก่อน');
+    setResult(null);
+    try {
+      const res = await apiService.uploadStatement(bankFile, password);
+      setResult(res);
+    } catch (e) {
+      alert('เกิดข้อผิดพลาดในการดึงข้อมูล');
     }
   };
 
@@ -65,7 +81,7 @@ export default function UploadComponent({ onUploadSuccess, onUploadError }) {
           <div className="file-box">
             <label className="upload-button">
               <span>เลือกไฟล์ PDF</span>
-              <input type="file" accept=".pdf" onChange={(e) => setBankFile(e.target.files[0])} />
+              <input type="file" accept=".pdf,.xlsx,.xls" onChange={(e) => setBankFile(e.target.files[0])} />
             </label>
             <span>{bankFile ? bankFile.name : 'เลือกไฟล์ PDF ของธนาคาร'}</span>
           </div>
@@ -76,7 +92,7 @@ export default function UploadComponent({ onUploadSuccess, onUploadError }) {
           <div className="file-box">
             <label className="upload-button">
               <span>เลือกไฟล์ Excel</span>
-              <input type="file" accept=".xlsx, .xls" onChange={(e) => setInternalFile(e.target.files[0])} />
+              <input type="file" accept=".xlsx,.xls" onChange={(e) => setInternalFile(e.target.files[0])} />
             </label>
             <span>{internalFile ? internalFile.name : 'เลือกไฟล์ Excel ของบริษัท'}</span>
           </div>

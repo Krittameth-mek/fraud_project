@@ -6,6 +6,7 @@ export default function RegisterPage({ setActivePage }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [error, setError] = useState('');
 
   // Real-time Email Validation
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -28,14 +29,19 @@ export default function RegisterPage({ setActivePage }) {
       alert('กรุณากรอกข้อมูลให้ถูกต้องและยอมรับข้อตกลงก่อนลงทะเบียน');
       return;
     }
-    await apiService.register(email, password);
-    alert('ลงทะเบียนสำเร็จ! กรุณาเข้าสู่ระบบ');
-    setActivePage('login');
+    try {
+      await apiService.register(email, password);
+      alert('ลงทะเบียนสำเร็จ! กรุณาเข้าสู่ระบบ');
+      setActivePage('login');
+    } catch (registerError) {
+      setError(registerError.message);
+    }
   };
 
   return (
     <div className="auth-card">
       <h2>ลงทะเบียน</h2>
+      {error && <p className="validation-msg invalid">{error}</p>}
       <form onSubmit={handleRegister}>
         <div>
           <input

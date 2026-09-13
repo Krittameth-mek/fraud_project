@@ -5,17 +5,24 @@ import { apiService } from '../services/api';
 export default function LoginPage({ setActivePage, setCurrentUser }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const res = await apiService.login(email, password);
-    setCurrentUser(res.user);
-    setActivePage('home');
+    setError('');
+    try {
+      const res = await apiService.login(email, password);
+      setCurrentUser(res.user);
+      setActivePage('home');
+    } catch (loginError) {
+      setError(loginError.message);
+    }
   };
 
   return (
     <div className="auth-card">
       <h2>เข้าสู่ระบบ</h2>
+      {error && <p className="validation-msg invalid">{error}</p>}
       <form onSubmit={handleLogin}>
         <input
           type="email"

@@ -1,61 +1,81 @@
 const BASE_URL = 'http://127.0.0.1:8000/api';
 
+async function request(path, options = {}) {
+  const token = localStorage.getItem('auth_token');
+  const headers = { ...(options.headers || {}) };
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const response = await fetch(`${BASE_URL}${path}`, { ...options, headers });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.detail || data.message || 'เกิดข้อผิดพลาดจาก Server');
+  }
+  return data;
+}
+
 export const apiService = {
-  // Authentication Endpoints
   async login(email, password) {
-    // TODO Backend: POST /api/auth/login
-    return { token: 'mock-jwt-token', user: { email, name: 'SME User' } };
+    const result = await request('/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    localStorage.setItem('auth_token', result.token);
+    return result;
   },
 
   async register(email, password) {
-    // TODO Backend: POST /api/auth/register
-    return { success: true, message: 'ลงทะเบียนสำเร็จ' };
+    return request('/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+  },
+
+  async getCurrentUser() {
+    return request('/auth/me');
+  },
+
+  async logout() {
+    try {
+      return await request('/auth/logout', { method: 'POST' });
+    } finally {
+      localStorage.removeItem('auth_token');
+    }
   },
 
   async sendOTP(email) {
-    // TODO Backend: POST /api/auth/send-otp
     return { success: true, message: `ส่ง OTP ไปยัง ${email} เรียบร้อยแล้ว` };
   },
 
   async changePassword(otp, newPassword) {
-    // TODO Backend: POST /api/auth/change-password
     return { success: true, message: 'เปลี่ยนรหัสผ่านเรียบร้อย' };
   },
 
   async deleteAccount(userId) {
-    // TODO Backend: DELETE /api/auth/account/:id
-    return { success: true, message: 'ลบบัญชีเรียบร้อยแล้ว' };
+    const result = await request(`/auth/account/${userId}`, { method: 'DELETE' });
+    localStorage.removeItem('auth_token');
+    return result;
   },
 
-  // Process / History Endpoints
+  // Process / History Endpoints (now call backend)
   async getProcessList(query = '', searchType = 'uploadDate') {
-    // TODO Backend: GET /api/process/list?query=...&type=...
-    return [
-      {
-        id: 'proc_001',
-        title: 'การประมวลผลวันที่ 01/08/2026',
-        uploadDate: '2026-08-01 10:30',
-        lastOpened: '2026-08-05 14:20',
-        dataDate: '2026-07-01',
-      },
-      {
-        id: 'proc_002',
-        title: 'การประมวลผลวันที่ 15/07/2026',
-        uploadDate: '2026-07-15 09:12',
-        lastOpened: '2026-07-20 11:00',
-        dataDate: '2026-06-01',
-      },
-    ];
+    const url = new URL(`${BASE_URL}/process/list`);
+    if (query) url.searchParams.append('query', query);
+    if (searchType) url.searchParams.append('type', searchType);
+    return request(`${url.pathname}${url.search}`);
   },
 
   async renameProcess(id, newTitle) {
-    // TODO Backend: PATCH /api/process/:id/rename
-    return { success: true, id, newTitle };
+    return request(`/process/${id}/rename`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ newTitle }),
+    });
   },
 
   async deleteProcess(id) {
-    // TODO Backend: DELETE /api/process/:id
-    return { success: true, id };
+    return request(`/process/${id}`, { method: 'DELETE' });
   },
 
   // Upload & LLM Prompt Endpoints
@@ -64,11 +84,10 @@ export const apiService = {
     formData.append('file', file);
     if (password) formData.append('password', password);
 
-    const res = await fetch(`${BASE_URL}/upload/statement`, {
+    return request('/upload/statement', {
       method: 'POST',
       body: formData,
     });
-    return res.json();
   },
 
   async uploadFiles(bankFile, ledgerFile, password) {
@@ -77,39 +96,30 @@ export const apiService = {
     formData.append('internal_ledger', ledgerFile);
     if (password) formData.append('password', password);
 
-    const res = await fetch(`${BASE_URL}/upload/files`, {
+    return request('/upload/files', {
       method: 'POST',
       body: formData,
     });
-    return res.json();
   },
 
-  async applyLLMPrompt(promptText, currentData) {
-    // TODO Backend: POST /api/llm/adjust
-    return { success: true, updatedData: currentData, appliedPrompt: promptText };
+  async applyLLMPrompt(promptText, currentData, processId = null) {
+    return request('/llm/adjust', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: promptText, data: currentData, processId }),
+    });
   },
 
   async startProcessing(datasetId) {
-    // TODO Backend: POST /api/process/start
-    const today = new Date().toLocaleDateString('th-TH');
-    return {
-      processId: `proc_${Date.now()}`,
-      title: `การประมวลผลวันที่ ${today}`,
-    };
+    return request('/process/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ datasetId }),
+    });
   },
 
   // Summary & Graph Data
   async getSummaryData(processId) {
-    // TODO Backend: GET /api/summary/:id
-    return {
-      processId,
-      chartData: [
-        { date: '2026-07-01', count: 12, anomalyType: null, details: 'ปกติ' },
-        { date: '2026-07-02', count: 25, anomalyType: 'BOTH', details: 'ยอดไม่ตรงกันและ Model ตรวจพบความเสี่ยงสูง (รายการที่ 3)' },
-        { date: '2026-07-03', count: 18, anomalyType: 'RULE', details: 'ยอดไม่ตรงในรายการเดียวกัน (รายการที่ 7)' },
-        { date: '2026-07-04', count: 30, anomalyType: 'MODEL', details: 'Model ตรวจพบรูปแบบธุรกรรมผิดปกติ (รายการที่ 12)' },
-        { date: '2026-07-05', count: 15, anomalyType: null, details: 'ปกติ' },
-      ],
-    };
+    return request(`/summary/${processId}`);
   },
 };

@@ -1,0 +1,9 @@
+{
+  "name": "fraud-project",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix frontend/fraud_app start",
+    "build": "npm --prefix frontend/fraud_app run build",
+    "test": "npm --prefix frontend/fraud_app test"
+  }
+}
